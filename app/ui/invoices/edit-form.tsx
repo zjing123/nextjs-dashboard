@@ -25,6 +25,12 @@ export default function EditInvoiceForm({
 
     return (
     <form action={formAction}>
+      {/* 显示通用错误消息 */}
+      {state?.message && (
+        <div className="mb-4 rounded-md bg-red-50 p-4">
+          <p className="text-sm text-red-500">{state.message}</p>
+        </div>
+      )}
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Customer Name */}
         <div className="mb-4">

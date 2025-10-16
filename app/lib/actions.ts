@@ -48,8 +48,7 @@ export async function createInvoice(
     // If form validation fails, return errors early. Otherwise, continue.
     if (!validatedFields.success) {
         return {
-            errors: validatedFields.error.flatten().fieldErrors,
-            message: 'Missing Fields. Failed to Create Invoice.',
+            errors: validatedFields.error.flatten().fieldErrors
         };
     }
 
@@ -65,7 +64,9 @@ export async function createInvoice(
         `;
     } catch (error) {
         console.log(error)
-        return 'Error: Create invoice failed.';
+        return {
+            message: 'Error: Create invoice failed.'
+        };
     }
 
     revalidatePath('/dashboard/invoices');
@@ -89,13 +90,16 @@ export async function updateInvoice(
     if (!validatedFields.success) {
         return {
             errors: validatedFields.error.flatten().fieldErrors,
-            message: 'Missing Fields. Failed to Update Invoice.',
         };
     }
 
     // Prepare data for insertion into the database
     const { customerId, amount, status } = validatedFields.data;
     const amountInCents = amount * 100;
+
+    return {
+        message: 'Error: Update invoice failed.'
+    }
 
     try {
         await sql`
@@ -105,7 +109,9 @@ export async function updateInvoice(
         `;
     } catch (error) {
         console.error(error)
-        return 'Error: Update invoice failed.'
+        return {
+            message: 'Error: Update invoice failed.'
+        }
     }
 
     revalidatePath('/dashboard/invoices');
