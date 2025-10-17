@@ -21,7 +21,9 @@ export async function POST(request: Request): Promise<NextResponse> {
         return {
           allowedContentTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
           addRandomSuffix: true,
-          // callbackUrl 在 Vercel 上会自动计算
+          // 提供回调 URL，支持本地开发和生产环境
+          callbackUrl: process.env.VERCEL_BLOB_CALLBACK_URL || 
+                      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined),
           tokenPayload: JSON.stringify({
             // 可选：上传完成时发送到服务器的数据
             // 可以传递用户 ID 或其他标识信息
