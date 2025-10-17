@@ -1,13 +1,14 @@
 import postgres from 'postgres';
 import {
-  CustomerField,
-  CustomersTableType,
-  InvoiceForm,
-  InvoicesTable,
-  LatestInvoiceRaw,
-  Revenue,
+    CustomerField,
+    CustomerForm,
+    CustomersTableType,
+    InvoiceForm,
+    InvoicesTable,
+    LatestInvoiceRaw,
+    Revenue,
 } from './definitions';
-import { formatCurrency } from './utils';
+import {formatCurrency} from './utils';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
 
@@ -186,7 +187,12 @@ export async function fetchCustomers() {
   }
 }
 
-export async function fetchFilteredCustomers(query: string) {
+export async function fetchFilteredCustomers(
+    query: string,
+    currentPage: number = 1
+) {
+    const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
   try {
     const data = await sql<CustomersTableType[]>`
 		SELECT
@@ -204,6 +210,7 @@ export async function fetchFilteredCustomers(query: string) {
         customers.email ILIKE ${`%${query}%`}
 		GROUP BY customers.id, customers.name, customers.email, customers.image_url
 		ORDER BY customers.name ASC
+		LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
 	  `;
 
     const customers = data.map((customer) => ({
@@ -217,4 +224,47 @@ export async function fetchFilteredCustomers(query: string) {
     console.error('Database Error:', err);
     throw new Error('Failed to fetch customer table.');
   }
+}
+
+export async function fetchCustomersPages(query: string) {
+    try {
+        const data = await sql`SELECT COUNT(*)
+            FROM customers
+            WHERE
+              customers.name ILIKE ${`%${query}%`} OR
+              customers.email ILIKE ${`%${query}%`}
+        `;
+
+        console.log(data)
+
+        return Math.ceil(Number(data[0].count) / ITEMS_PER_PAGE);
+    } catch (error) {
+        console.error('Database Error:', error);
+        throw new Error('Failed to fetch total number of invoices.');
+    }
+}
+
+export async function fetchCustomerById(id: string) {
+    try {
+        const data = await sql<CustomerForm[]>`
+      SELECT
+          customers.id,
+          customers.name,
+          customers.email,
+          customers.image_url
+      FROM customers
+      WHERE customers.id = ${id};
+    `;
+
+        const customer = data.map((customer) => ({
+            ...customer,
+        }));
+
+        console.log(customer);
+
+        return customer[0];
+    } catch (error) {
+        console.error('Database Error:', error);
+        throw new Error('Failed to fetch customer.');
+    }
 }

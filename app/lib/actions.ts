@@ -31,6 +31,9 @@ export type State = {
         customerId?: string[];
         amount?: string[];
         status?: string[];
+        name?: string[];
+        email?: string[];
+        image_url?: string[];
     };
     message?: string | null;
 };
@@ -97,10 +100,6 @@ export async function updateInvoice(
     const { customerId, amount, status } = validatedFields.data;
     const amountInCents = amount * 100;
 
-    return {
-        message: 'Error: Update invoice failed.'
-    }
-
     try {
         await sql`
             UPDATE invoices
@@ -119,7 +118,6 @@ export async function updateInvoice(
 }
 
 export async function deleteInvoice(id: string) {
-    throw new Error('Failed to Delete Invoice');
     await sql `DELETE FROM invoices where id = ${id}`;
 
     revalidatePath('/dashboard/invoices');
@@ -142,4 +140,102 @@ export async function authenticate(
         }
         throw error;
     }
+}
+
+const CustomerFormSchema = z.object({
+    id: z.string(),
+    name: z.string({
+        invalid_type_error: 'Please enter customer name'
+    }),
+    email: z.string().email({
+        message: 'Please enter a validate email.'
+    }),
+    image_url: z.string(),
+});
+
+const CreateCustomer = CustomerFormSchema.omit({id: true});
+const UpdateCustomer = CustomerFormSchema.omit({id: true});
+
+export async function createCustomer(
+    prevState: State,
+    formData: FormData
+) {
+    const validatedFields = CreateCustomer.safeParse({
+        name: formData.get('name'),
+        email: formData.get('email'),
+        image_url: formData.get('status') || ''
+    });
+
+    // If form validation fails, return errors early. Otherwise, continue.
+    if (!validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: null
+        };
+    }
+
+    // Prepare data for insertion into the database
+    const { name, email, image_url } = validatedFields.data;
+
+    try {
+        await sql`
+            INSERT INTO customers (name, email, image_url)
+            VALUES (${name}, ${email}, ${image_url})
+        `;
+    } catch (error) {
+        console.log(error)
+        return {
+            message: 'Error: Create customer failed.'
+        };
+    }
+
+    revalidatePath('/dashboard/customers');
+    redirect('/dashboard/customers');
+}
+
+export async function updateCustomer(
+    id: string,
+    prevState: State,
+    formData: FormData,
+) {
+    console.log(FormData)
+
+    const validatedFields = UpdateCustomer.safeParse({
+        name: formData.get('name'),
+        email: formData.get('email'),
+        image_url: formData.get('image_url') || '',
+    });
+
+    // If form validation fails, return errors early. Otherwise, continue.
+    if (!validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+        };
+    }
+
+    // Prepare data for insertion into the database
+    const { name, email, image_url } = validatedFields.data;
+
+    try {
+        await sql`
+            UPDATE customers
+            SET name = ${name}, email = ${email}, image_url = ${image_url}
+            WHERE id = ${id}
+        `;
+    } catch (error) {
+        console.error(error)
+        return {
+            message: 'Error: Update customer failed.'
+        }
+    }
+
+    revalidatePath('/dashboard/customers');
+    redirect('/dashboard/customers');
+}
+
+export async function deleteCustomer(id: string) {
+    await sql `DELETE FROM customers where id = ${id}`;
+    await sql `DELETE FROM invoices where customer_id = ${id}`;
+
+    revalidatePath('/dashboard/customers');
 }
