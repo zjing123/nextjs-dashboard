@@ -5,11 +5,12 @@ import Link from "next/link";
 import {Button} from "@/app/ui/button";
 import ImageUploader from "@/app/ui/customers/image-upload";
 import {createCustomer, CustomerFormState} from '@/app/lib/actions';
-import { useActionState } from 'react';
+import { useActionState, useState } from 'react';
 
 export default function Form() {
     const initialState: CustomerFormState = { message: null, errors: {} };
     const [state, formAction] = useActionState(createCustomer, initialState);
+    const [imageUrl, setImageUrl] = useState<string>('');
 
     console.log(state);
 
@@ -76,13 +77,17 @@ export default function Form() {
                     </div>
                 </div>
 
-                {/* Invoice Status */}
+                {/* Image Url */}
                 <fieldset>
                     <legend className="mb-2 block text-sm font-medium">
                         Upload Customer Image
                     </legend>
-                    <div className="rounded-md border border-gray-200 bg-white px-[14px] py-3">
-                        <ImageUploader />
+                    <div className="w-full">
+                        <ImageUploader 
+                            onUpload={(url) => setImageUrl(url)}
+                            onDelete={() => setImageUrl('')}
+                        />
+                        <input type="hidden" name="image_url" value={imageUrl} />
                     </div>
                     <div id="image-url-error" aria-live="polite" aria-atomic="true">
                         {state.errors?.image_url &&

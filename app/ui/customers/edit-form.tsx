@@ -2,7 +2,7 @@
 
 import { CustomerForm } from "@/app/lib/definitions";
 import {updateCustomer, CustomerFormState} from '@/app/lib/actions';
-import {useActionState} from "react";
+import {useActionState, useState} from "react";
 import {EnvelopeIcon, UserCircleIcon} from "@heroicons/react/24/outline";
 import ImageUploader from "@/app/ui/customers/image-upload";
 import Link from "next/link";
@@ -16,6 +16,7 @@ export default function EditCustomerForm({
     const initialState: CustomerFormState = { message: null, errors: {} };
     const updateCustomerWithId = updateCustomer.bind(null, customer.id);
     const [state, formAction] = useActionState(updateCustomerWithId, initialState);
+    const [imageUrl, setImageUrl] = useState<string>(customer.image_url || '');
 
     return (
         <form action={formAction}>
@@ -26,10 +27,10 @@ export default function EditCustomerForm({
                 </div>
             )}
             <div className="rounded-md bg-gray-50 p-4 md:p-6">
-                {/* Customer Name */}
+                {/* Name */}
                 <div className="mb-4">
                     <label htmlFor="customer" className="mb-2 block text-sm font-medium">
-                        Customer Name
+                        Name
                     </label>
                     <div className="relative">
                         <input
@@ -53,10 +54,10 @@ export default function EditCustomerForm({
                     </div>
                 </div>
 
-                {/* Invoice Amount */}
+                {/* Customer Email */}
                 <div className="mb-4">
                     <label htmlFor="amount" className="mb-2 block text-sm font-medium">
-                        Customer Email
+                        Email
                     </label>
                     <div className="relative mt-2 rounded-md">
                         <div className="relative">
@@ -82,13 +83,18 @@ export default function EditCustomerForm({
                     </div>
                 </div>
 
-                {/* Invoice Status */}
+                {/* Image Url */}
                 <fieldset>
                     <legend className="mb-2 block text-sm font-medium">
-                        Upload Customer Image
+                        Image
                     </legend>
-                    <div className="rounded-md border border-gray-200 bg-white px-[14px] py-3">
-                        <ImageUploader />
+                    <div className="w-full">
+                        <ImageUploader
+                            onUpload={(url) => setImageUrl(url)}
+                            onDelete={() => setImageUrl('')}
+                            initialImageUrl={customer.image_url}
+                        />
+                        <input type="hidden" name="image_url" value={imageUrl} />
                     </div>
                     <div id="image-url-error" aria-live="polite" aria-atomic="true">
                         {state.errors?.image_url &&
