@@ -26,20 +26,17 @@ const FormSchema = z.object({
 const CreateInvoice = FormSchema.omit({ id: true, date: true });
 const UpdateInvoice = FormSchema.omit({ id: true, date: true });
 
-export type State = {
+export type InvoiceFormState = {
     errors?: {
         customerId?: string[];
         amount?: string[];
         status?: string[];
-        name?: string[];
-        email?: string[];
-        image_url?: string[];
     };
     message?: string | null;
 };
 
 export async function createInvoice(
-    prevState: State,
+    prevState: InvoiceFormState,
     formData: FormData
 ) {
     const validatedFields = CreateInvoice.safeParse({
@@ -78,7 +75,7 @@ export async function createInvoice(
 
 export async function updateInvoice(
     id: string,
-    prevState: State,
+    prevState: InvoiceFormState,
     formData: FormData,
 ) {
     console.log(FormData)
@@ -92,7 +89,7 @@ export async function updateInvoice(
     // If form validation fails, return errors early. Otherwise, continue.
     if (!validatedFields.success) {
         return {
-            errors: validatedFields.error.flatten().fieldErrors,
+            errors: validatedFields.error.flatten().fieldErrors
         };
     }
 
@@ -156,8 +153,17 @@ const CustomerFormSchema = z.object({
 const CreateCustomer = CustomerFormSchema.omit({id: true});
 const UpdateCustomer = CustomerFormSchema.omit({id: true});
 
+export type CustomerFormState = {
+    errors?: {
+        name?: string[];
+        email?: string[];
+        image_url?: string[];
+    };
+    message?: string | null;
+};
+
 export async function createCustomer(
-    prevState: State,
+    prevState: CustomerFormState,
     formData: FormData
 ) {
     const validatedFields = CreateCustomer.safeParse({
@@ -169,8 +175,7 @@ export async function createCustomer(
     // If form validation fails, return errors early. Otherwise, continue.
     if (!validatedFields.success) {
         return {
-            errors: validatedFields.error.flatten().fieldErrors,
-            message: null
+            errors: validatedFields.error.flatten().fieldErrors
         };
     }
 
@@ -195,7 +200,7 @@ export async function createCustomer(
 
 export async function updateCustomer(
     id: string,
-    prevState: State,
+    prevState: CustomerFormState,
     formData: FormData,
 ) {
     console.log(FormData)
@@ -209,7 +214,7 @@ export async function updateCustomer(
     // If form validation fails, return errors early. Otherwise, continue.
     if (!validatedFields.success) {
         return {
-            errors: validatedFields.error.flatten().fieldErrors,
+            errors: validatedFields.error.flatten().fieldErrors
         };
     }
 

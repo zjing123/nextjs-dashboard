@@ -6,11 +6,11 @@ import Image from 'next/image';
 
 export default function ImageUploader() {
     const [uploading, setUploading] = useState(false);
-    const [selectedFile, setSelectedFile] = useState(null);
-    const [uploadResult, setUploadResult] = useState(null);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [uploadResult, setUploadResult] = useState<{ success: boolean; url?: string; message?: string } | null>(null);
 
-    const handleFileChange = (e) => {
-        setSelectedFile(e.target.files[0]);
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSelectedFile(e.target.files?.[0] || null);
     };
 
     const handleUpload = async () => {
@@ -52,7 +52,7 @@ export default function ImageUploader() {
             <button onClick={handleUpload} disabled={uploading}>
                 {uploading ? "上传中..." : "上传图片"}
             </button>
-            {uploadResult?.success && (
+            {uploadResult?.success && uploadResult.url && (
                 <div>
                     <p>预览：</p>
                     {/* 直接使用返回的URL路径显示图片 */}

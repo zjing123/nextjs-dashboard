@@ -1,7 +1,7 @@
 'use client';
 
 import { CustomerForm } from "@/app/lib/definitions";
-import {State, updateCustomer} from '@/app/lib/actions';
+import {updateCustomer, CustomerFormState} from '@/app/lib/actions';
 import {useActionState} from "react";
 import {EnvelopeIcon, UserCircleIcon} from "@heroicons/react/24/outline";
 import ImageUploader from "@/app/ui/customers/image-upload";
@@ -13,7 +13,7 @@ export default function EditCustomerForm({
 }: {
     customer: CustomerForm;
 }) {
-    const initialState: State = { message: null, errors: {} };
+    const initialState: CustomerFormState = { message: null, errors: {} };
     const updateCustomerWithId = updateCustomer.bind(null, customer.id);
     const [state, formAction] = useActionState(updateCustomerWithId, initialState);
 
