@@ -4,11 +4,11 @@ import { UserCircleIcon, EnvelopeIcon} from "@heroicons/react/24/outline";
 import Link from "next/link";
 import {Button} from "@/app/ui/button";
 import ImageUploader from "@/app/ui/customers/image-upload";
-import {createCustomer, State} from '@/app/lib/actions';
+import {createCustomer, CustomerFormState} from '@/app/lib/actions';
 import { useActionState } from 'react';
 
 export default function Form() {
-    const initialState: State = { message: null, errors: {} };
+    const initialState: CustomerFormState = { message: null, errors: {} };
     const [state, formAction] = useActionState(createCustomer, initialState);
 
     console.log(state);
