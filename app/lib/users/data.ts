@@ -28,7 +28,7 @@ export async function fetchFilteredUsers(
 
 export async function fetchUserById(id: string) {
     try {
-        const data = await sql`SELECT * from users WHERE id = ${id}`;
+        const data = await sql<User[]>`SELECT * from users WHERE id = ${id}`;
         
         if (data.length === 0) {
             return null;

@@ -1,5 +1,5 @@
 import {Metadata} from "next";
-import {inter, lusitana} from "@/app/ui/fonts";
+import {lusitana} from "@/app/ui/fonts";
 import Search from "@/app/ui/search";
 import { CreateUser } from "@/app/ui/users/buttons";
 import { fetchUsersPages } from '@/app/lib/users/data';

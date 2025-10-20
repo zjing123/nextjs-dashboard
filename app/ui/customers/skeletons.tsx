@@ -1,6 +1,3 @@
-import Image from "next/image";
-import {DeleteCustomer, UpdateCustomer} from "@/app/ui/customers/buttons";
-
 export function CustomersMobileSkeleton() {
     return (
         <div className="mb-2 w-full rounded-md bg-white p-4">

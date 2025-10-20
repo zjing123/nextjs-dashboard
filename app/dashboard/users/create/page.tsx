@@ -6,13 +6,6 @@ export const metadata: Metadata = {
     title: 'Create Admin User',
 };
 
-interface PageProps {
-    searchParams?: Promise<{
-        query?: string;
-        page?: string;
-    }>;
-}
-
 export default async function Page() {
 
     return (
