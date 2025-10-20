@@ -26,6 +26,21 @@ export async function fetchFilteredUsers(
     }
 }
 
+export async function fetchUserById(id: string) {
+    try {
+        const data = await sql`SELECT * from users WHERE id = ${id}`;
+        
+        if (data.length === 0) {
+            return null;
+        }
+        
+        return data[0];
+    } catch (error) {
+        console.error('Database Error:', error);
+        throw new Error('Failed to fetch user.');
+    }
+}
+
 export async function fetchUsersPages(query: string) {
     try {
         const data = await sql`SELECT COUNT(*)

@@ -81,6 +81,46 @@ export async function createUser(
     redirect('/dashboard/users');
 }
 
+export async function updateUser(
+    id: string,
+    prevState: UserFormState,
+    formData: FormData
+) {
+    const validatedFields = CreateUser.safeParse({
+        name: formData.get('name'),
+        email: formData.get('email'),
+        password: formData.get('password'),
+        password_confirmation: formData.get('password_confirmation')
+    });
+
+    // If form validation fails, return errors early. Otherwise, continue.
+    if (!validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors
+        };
+    }
+
+    // Prepare data for insertion into the database
+    const { name, email, password } = validatedFields.data;
+
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        await sql`
+           UPDATE users 
+           SET name = ${name}, email = ${email}, password = ${hashedPassword}
+           WHERE id = ${id}
+        `;
+    } catch (error) {
+        console.log(error)
+        return {
+            message: 'Error: Update user failed.'
+        };
+    }
+
+    revalidatePath('/dashboard/users');
+    redirect('/dashboard/users');
+}
+
 export async function deleteUser(id: string) {
     await sql `DELETE FROM users where id = ${id}`;
 
